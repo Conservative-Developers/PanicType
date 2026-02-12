@@ -1,251 +1,86 @@
-# PanicType — Technical System Design
+# PanicType ⌨️💨
 
-PanicType is a real-time typing race platform inspired by Monkeytype, designed for low-latency gameplay, persistent user profiles, and competitive ranking systems.
+> **Race against the clock. Race against the world.**
 
----
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-development-orange)
 
-## 1. Objectives
+## 📖 About The Project
 
-### 1.1 Product Goals
-- Deliver fast, responsive typing races with deterministic scoring.
-- Provide long-term progression through user profiles and historical performance analytics.
-- Support trustworthy, competitive ranking through leaderboards and anti-cheat controls.
+**PanicType** is a real-time multiplayer typing game. The goal is simple: type the given text faster than your opponents.
 
-### 1.2 Non-Goals (Initial Phase)
-- Real-money tournaments.
-- Offline-first native clients.
-- Full social graph (friends/chat) in v1.
+Unlike static typing tests, PanicType focuses on the competitive experience. It features a live ranking system where players can see their progress against others in real-time, along with a profile system to track improvement over time.
 
----
+### ✨ Key Features
 
-## 2. Functional Requirements
-
-### 2.1 Typing Race Core
-- Serve race prompts with configurable language/difficulty/length.
-- Capture per-keystroke or chunked typing events.
-- Compute final metrics:
-  - WPM
-  - CPM
-  - Accuracy (%)
-  - Time to completion
-  - Error count
-- Support solo mode first; multiplayer race orchestration can be added later.
-
-### 2.2 User Profiles
-- Authentication and account lifecycle (signup/login/session refresh).
-- User profile with:
-  - Public identity (username, avatar)
-  - Personal bests
-  - Aggregate statistics (daily, weekly, all-time)
-  - Race history
-
-### 2.3 Ranking / Leaderboards
-- Daily, weekly, monthly, all-time leaderboard views.
-- Ranking based on weighted score from speed and accuracy.
-- Tie-breaking rules (e.g., accuracy, completion time, attempt count).
-
-### 2.4 Admin / Moderation (Minimum)
-- Flag suspicious race submissions.
-- Manual reset or invalidation of suspicious results.
+* **Real-Time Multiplayer:** Race against other players live.
+* **User Profiles:** Save your stats, track your WPM (Words Per Minute), and view your history.
+* **Ranking System:** Climb the leaderboard with an ELO-based ranking system.
+* **Instant Feedback:** Visual cues for typos and speed during the race.
 
 ---
 
-## 3. Non-Functional Requirements
+## 🛠️ Built With
 
-- **Latency:** UI feedback for keystrokes < 50ms perceived.
-- **Availability:** 99.9% monthly availability target for API.
-- **Scalability:** Horizontal API scaling and read-optimized leaderboard queries.
-- **Consistency:** Strong consistency for profile updates; eventual consistency acceptable for leaderboard materialization.
-- **Security:** JWT/session protection, rate limiting, secure password storage.
-- **Observability:** Structured logs, metrics, and traces for race submission flow.
+* **Frontend:** React, Next.js, Tailwind CSS
+* **Backend:** Node.js, Express
+* **Real-Time:** Socket.io
+* **Database:** PostgreSQL (with Prisma ORM)
 
 ---
 
-## 4. High-Level Architecture
+## 🚀 Getting Started
 
-```text
-[Web Client]
-   |  HTTPS + WebSocket (optional)
-   v
-[API Gateway / BFF]
-   |
-   +--> [Auth Service] ------> [User DB]
-   |
-   +--> [Race Service] ------> [Race DB]
-   |
-   +--> [Ranking Service] ---> [Leaderboard Cache/Store]
-   |
-   +--> [Anti-Cheat Service]
+Follow these steps to get a local copy up and running.
 
-[Async Queue/Event Bus] <---- Race events ---- [Race Service]
-            |
-            +--> [Stats Aggregator Worker]
-            +--> [Leaderboard Materializer Worker]
-```
+### Prerequisites
 
-### Service Responsibilities
-- **BFF / API Gateway:** request routing, auth context propagation, response shaping for frontend.
-- **Auth Service:** identity, session/token issuance, password reset.
-- **Race Service:** prompt assignment, result validation, race persistence.
-- **Ranking Service:** rank retrieval, season windows, percentile calculations.
-- **Anti-Cheat Service:** heuristic checks and anomaly detection signals.
-- **Workers:** asynchronous aggregation to reduce request-path latency.
+* Node.js (v18 or higher)
+* npm or yarn
 
----
+### Installation
 
-## 5. Data Model (Conceptual)
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/yourusername/panictype.git](https://github.com/yourusername/panictype.git)
+    cd panictype
+    ```
 
-### 5.1 Core Entities
-- `users`
-  - `id`, `username`, `email`, `password_hash`, `created_at`, `status`
-- `profiles`
-  - `user_id`, `display_name`, `avatar_url`, `country`, `bio`
-- `prompts`
-  - `id`, `language`, `difficulty`, `content`, `word_count`, `is_active`
-- `races`
-  - `id`, `user_id`, `prompt_id`, `started_at`, `finished_at`, `mode`, `client_version`
-- `race_metrics`
-  - `race_id`, `wpm`, `cpm`, `accuracy`, `error_count`, `duration_ms`, `score`
-- `leaderboard_entries`
-  - `window` (daily/weekly/monthly/all-time), `window_start`, `user_id`, `score`, `rank`, `updated_at`
-- `audit_events`
-  - `id`, `user_id`, `event_type`, `payload`, `created_at`
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-### 5.2 Storage Strategy
-- Relational DB (e.g., PostgreSQL) for transactional entities.
-- Redis for hot leaderboard reads and session/rate-limit state.
-- Object storage for static assets (avatars, prompt import files).
+3.  **Set up Environment Variables**
+    Create a `.env` file in the root directory and add your database and auth keys:
+    ```env
+    DATABASE_URL="postgresql://..."
+    JWT_SECRET="your_secret_key"
+    ```
+
+4.  **Run the application**
+    ```bash
+    npm run dev
+    ```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ---
 
-## 6. API Design (v1 Sketch)
+## 🤝 Contributing
 
-### Auth
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/refresh`
-- `POST /api/v1/auth/logout`
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-### Profile
-- `GET /api/v1/me`
-- `PATCH /api/v1/me`
-- `GET /api/v1/users/{username}`
-- `GET /api/v1/users/{username}/stats`
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-### Race
-- `GET /api/v1/races/prompt?difficulty=...&language=...`
-- `POST /api/v1/races/start`
-- `POST /api/v1/races/{id}/finish`
-- `GET /api/v1/races/history?cursor=...`
+## 📄 License
 
-### Leaderboard
-- `GET /api/v1/leaderboards/{window}`
-- `GET /api/v1/leaderboards/{window}/around-me`
-
-### Admin
-- `GET /api/v1/admin/flags`
-- `POST /api/v1/admin/races/{id}/invalidate`
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 7. Race Scoring & Ranking Logic
-
-### 7.1 Metric Computation
-- `duration_minutes = duration_ms / 60000`
-- `gross_wpm = typed_chars / 5 / duration_minutes`
-- `net_wpm = max(gross_wpm - penalties, 0)`
-- `accuracy = correct_chars / max(typed_chars, 1)`
-
-### 7.2 Composite Score (Example)
-```text
-score = (net_wpm * 0.7) + (accuracy_percent * 0.3)
-```
-
-### 7.3 Rank Materialization
-- Append race result event.
-- Aggregate by ranking window.
-- Recompute or incrementally update leaderboard positions.
-- Cache top N per window for fast reads.
-
----
-
-## 8. Anti-Cheat Strategy (v1)
-
-- Server-side recomputation of all submitted metrics.
-- Reject impossible values (e.g., unrealistic WPM thresholds, inconsistent durations).
-- Heuristic risk scoring:
-  - Extreme variance from user baseline.
-  - Repeated perfect patterns with low latency jitter.
-  - High score from outdated or untrusted client versions.
-- Mark suspicious entries for moderation or shadow exclusion from leaderboards.
-
----
-
-## 9. Security Design
-
-- Password hashing with Argon2 or bcrypt.
-- JWT access token + refresh token rotation.
-- IP and account-level rate limiting on auth and race submission endpoints.
-- CSRF protections if cookie-based session model is used.
-- Input validation and output encoding for all profile fields.
-- Audit logging for sensitive state changes.
-
----
-
-## 10. Performance & Scalability
-
-- CDN for static frontend assets.
-- Stateless API instances behind load balancer.
-- Read replicas for leaderboard-heavy query paths.
-- Redis sorted sets for near-real-time ranking retrieval.
-- Async workers for heavy recomputation and historical analytics.
-
----
-
-## 11. Observability & Reliability
-
-- **Metrics:** API latency, race submit success rate, leaderboard refresh latency.
-- **Logs:** structured JSON with request id / user id correlation.
-- **Tracing:** distributed traces across BFF, race, ranking, and worker pipelines.
-- **SLO Alerts:**
-  - p95 API latency breach
-  - race submit error spikes
-  - leaderboard staleness threshold exceeded
-
----
-
-## 12. Delivery Roadmap
-
-### Phase 1 — Core MVP
-- Solo typing test.
-- Auth + user profile basics.
-- Race submission and stats history.
-
-### Phase 2 — Competitive Layer
-- Daily/weekly/monthly leaderboards.
-- Ranking materialization workers.
-- Basic anti-cheat checks.
-
-### Phase 3 — Advanced Experience
-- Real-time multiplayer races.
-- Seasonal events and badges.
-- Enhanced analytics and progression insights.
-
----
-
-## 13. Local Development (Suggested)
-
-```bash
-# Example only — update when runtime stack is finalized
-# 1) Start database and redis
-# 2) Start backend API
-# 3) Start frontend app
-```
-
-A concrete setup guide should be added once the stack (frontend framework + backend runtime) is finalized.
-
----
-
-## 14. License
-
-This project is licensed under the [MIT License](./LICENSE).
+**Made with ❤️**
