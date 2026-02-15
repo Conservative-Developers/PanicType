@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  username     String         @unique
+  email        String         @unique
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  results      TypingResult[]
+}
+
+model TypingResult {
+  id         String   @id @default(cuid())
+  userId     String
+  wpm        Float
+  accuracy   Float
+  textLength Int
+  duration   Float
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([wpm(sort: Desc)])
+}

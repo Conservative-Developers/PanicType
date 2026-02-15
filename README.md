@@ -1,86 +1,36 @@
-# PanicType ⌨️💨
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> **Race against the clock. Race against the world.**
+## Getting Started
 
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Status](https://img.shields.io/badge/status-development-orange)
+First, run the development server:
 
-## 📖 About The Project
-
-**PanicType** is a real-time multiplayer typing game. The goal is simple: type the given text faster than your opponents.
-
-Unlike static typing tests, PanicType focuses on the competitive experience. It features a live ranking system where players can see their progress against others in real-time, along with a profile system to track improvement over time.
-
-### ✨ Key Features
-
-* **Real-Time Multiplayer:** Race against other players live.
-* **User Profiles:** Save your stats, track your WPM (Words Per Minute), and view your history.
-* **Ranking System:** Climb the leaderboard with an ELO-based ranking system.
-* **Instant Feedback:** Visual cues for typos and speed during the race.
-
----
-
-## 🛠️ Built With
-
-* **Frontend:** React, Next.js, Tailwind CSS
-* **Backend:** Node.js, Express
-* **Real-Time:** Socket.io
-* **Database:** PostgreSQL (with Prisma ORM)
-
----
-
-## 🚀 Getting Started
-
-Follow these steps to get a local copy up and running.
-
-### Prerequisites
-
-* Node.js (v18 or higher)
-* npm or yarn
-
-### Installation
-
-1.  **Clone the repository**
-    ```bash
-    git clone [https://github.com/yourusername/panictype.git](https://github.com/yourusername/panictype.git)
-    cd panictype
-    ```
-
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Set up Environment Variables**
-    Create a `.env` file in the root directory and add your database and auth keys:
-    ```env
-    DATABASE_URL="postgresql://..."
-    JWT_SECRET="your_secret_key"
-    ```
-
-4.  **Run the application**
-    ```bash
-    npm run dev
-    ```
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🤝 Contributing
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+## Learn More
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+To learn more about Next.js, take a look at the following resources:
 
-## 📄 License
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Distributed under the MIT License. See `LICENSE` for more information.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-**Made with ❤️**
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
